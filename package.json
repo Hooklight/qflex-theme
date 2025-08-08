@@ -1,0 +1,31 @@
+{
+  "scripts": {
+    "fmt": "prettier --write .",
+    "fmt:check": "prettier --check .",
+    "lint:js": "eslint . --ext .js,.ts,.liquid",
+    "lint:css": "stylelint \"**/*.{css,liquid}\"",
+    "theme:check": "theme-check",
+    "build:js": "esbuild assets/*.js --bundle --outdir=assets --minify --sourcemap",
+    "build:css": "postcss assets/*.css -d assets",
+    "build": "npm run build:js && npm run build:css",
+    "test:e2e": "playwright test",
+    "test:e2e:update": "playwright test --update-snapshots"
+  },
+  "devDependencies": {
+    "@shopify/prettier-plugin-liquid": "^1.5.0",
+    "prettier": "^3.3.0",
+    "eslint": "^9.0.0",
+    "eslint-plugin-html": "^8.0.0",
+    "stylelint": "^16.0.0",
+    "stylelint-config-standard": "^36.0.0",
+    "esbuild": "^0.21.0",
+    "postcss": "^8.4.0",
+    "autoprefixer": "^10.4.0",
+    "@playwright/test": "^1.45.0",
+    "sharp": "^0.33.0",
+    "theme-check": "^1.18.0",
+    "typescript": "^5.4.0",
+    "zx": "^7.2.3",
+    "cross-fetch": "^4.0.0"
+  }
+}
