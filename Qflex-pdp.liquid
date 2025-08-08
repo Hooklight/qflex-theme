@@ -1,0 +1,124 @@
+<!-- File: sections/qflex-pdp.liquid -->
+{% comment %}
+QFlex Product Detail Page section – mobile-first, senior-friendly.
+Includes hero, bullets, info cards, comparison, and FAQ. All editable.
+{% endcomment %}
+
+<style>
+.qf-container { max-width: 1200px; margin: 0 auto; padding: 2rem; font-family: inherit; }
+.qf-hero img { max-width: 100%; border-radius: 12px; }
+.qf-title { font-size: 2rem; font-weight: bold; margin: 1rem 0; }
+.qf-price { font-size: 1.5rem; color: #007b5e; margin-bottom: 1rem; }
+.qf-btn { padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: bold; }
+.qf-btn--primary { background: #007b5e; color: #fff; }
+.qf-bullets { list-style: none; padding: 0; margin: 1.5rem 0; }
+.qf-bullets li { margin-bottom: 0.5rem; padding-left: 1.5rem; position: relative; }
+.qf-bullets li::before { content: "✔"; color: #007b5e; position: absolute; left: 0; }
+.qf-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); margin: 2rem 0; }
+.qf-card { background: #f9f9f9; padding: 1rem; border-radius: 8px; }
+.qf-compare table { width: 100%; border-collapse: collapse; }
+.qf-compare th, .qf-compare td { border: 1px solid #ddd; padding: 0.5rem; text-align: center; }
+.qf-faq { margin-top: 3rem; }
+.qf-faq-item { border-bottom: 1px solid #ddd; padding: 1rem 0; }
+</style>
+
+<section class="qf-container">
+  <!-- Hero & Buy Box -->
+  <div class="qf-hero">
+    <img src="{{ section.settings.product_image | img_url: '800x' }}" alt="Product">
+    <h1 class="qf-title">{{ section.settings.product_title }}</h1>
+    <div class="qf-price">{{ section.settings.product_price }}</div>
+    <a href="{{ section.settings.buy_link }}" class="qf-btn qf-btn--primary">{{ section.settings.buy_text }}</a>
+  </div>
+
+  <!-- Bullets -->
+  <ul class="qf-bullets">
+    {% for block in section.blocks %}
+      {% if block.type == 'bullet' %}
+        <li>{{ block.settings.text }}</li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+
+  <!-- Info Cards -->
+  <div class="qf-grid">
+    {% for block in section.blocks %}
+      {% if block.type == 'info' %}
+        <div class="qf-card">
+          <h3>{{ block.settings.title }}</h3>
+          <p>{{ block.settings.text }}</p>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <!-- Comparison Table -->
+  <div class="qf-compare">
+    <table>
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>QFlex</th>
+          <th>Massage Gun</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for block in section.blocks %}
+          {% if block.type == 'compare' %}
+            <tr>
+              <td>{{ block.settings.feature }}</td>
+              <td>{{ block.settings.qflex }}</td>
+              <td>{{ block.settings.other }}</td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FAQ -->
+  <div class="qf-faq">
+    {% for block in section.blocks %}
+      {% if block.type == 'faq' %}
+        <div class="qf-faq-item">
+          <strong>{{ block.settings.question }}</strong>
+          <p>{{ block.settings.answer }}</p>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "QFlex PDP",
+  "settings": [
+    {"type": "image_picker", "id": "product_image", "label": "Product Image"},
+    {"type": "text", "id": "product_title", "label": "Product Title"},
+    {"type": "text", "id": "product_price", "label": "Product Price"},
+    {"type": "text", "id": "buy_text", "label": "Buy Button Text"},
+    {"type": "url", "id": "buy_link", "label": "Buy Button Link"}
+  ],
+  "blocks": [
+    {"type": "bullet", "name": "Bullet Point", "settings": [
+      {"type": "text", "id": "text", "label": "Bullet Text"}
+    ]},
+    {"type": "info", "name": "Info Card", "settings": [
+      {"type": "text", "id": "title", "label": "Title"},
+      {"type": "textarea", "id": "text", "label": "Text"}
+    ]},
+    {"type": "compare", "name": "Comparison Row", "settings": [
+      {"type": "text", "id": "feature", "label": "Feature"},
+      {"type": "text", "id": "qflex", "label": "QFlex"},
+      {"type": "text", "id": "other", "label": "Massage Gun"}
+    ]},
+    {"type": "faq", "name": "FAQ", "settings": [
+      {"type": "text", "id": "question", "label": "Question"},
+      {"type": "textarea", "id": "answer", "label": "Answer"}
+    ]}
+  ],
+  "presets": [
+    {"name": "QFlex PDP", "category": "Custom"}
+  ]
+}
+{% endschema %}

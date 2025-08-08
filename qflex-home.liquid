@@ -1,0 +1,360 @@
+<!-- File: sections/qflex-home.liquid -->
+{% comment %}
+QFlex Homepage – FINAL
+- Premium, mobile-first, accessible
+- All copy/images editable in Theme Editor
+- Scoped CSS; no external assets required
+{% endcomment %}
+
+<section id="qflex-home" class="qh">
+  <!-- TRUST BAR -->
+  <div class="qh-trust">
+    <span>{{ section.settings.trust_left }}</span>
+    <span aria-hidden="true">•</span>
+    <span>{{ section.settings.trust_mid }}</span>
+    <span aria-hidden="true">•</span>
+    <span>{{ section.settings.trust_right }}</span>
+  </div>
+
+  <div class="qh-wrap">
+    <!-- HERO -->
+    <div class="qh-hero">
+      <div class="qh-hero-copy">
+        {% if section.settings.eyebrow_show and section.settings.eyebrow_text != blank %}
+          <div class="qh-eyebrow">{{ section.settings.eyebrow_text }}</div>
+        {% endif %}
+        <h1 class="qh-h1">{{ section.settings.hero_title }}</h1>
+        <p class="qh-sub">{{ section.settings.hero_subtitle }}</p>
+
+        {% if section.settings.show_stars and section.settings.star_text != blank %}
+          <div class="qh-stars">
+            <span aria-hidden="true">★★★★★</span>
+            <span class="qh-stars-text">{{ section.settings.star_text }}</span>
+          </div>
+        {% endif %}
+
+        <div class="qh-cta">
+          {% if section.settings.hero_cta_link and section.settings.hero_cta_text %}
+            <a href="{{ section.settings.hero_cta_link }}" class="qh-btn qh-btn--primary" aria-label="{{ section.settings.hero_cta_text }}">{{ section.settings.hero_cta_text }}</a>
+          {% endif %}
+          {% if section.settings.hero_cta2_link and section.settings.hero_cta2_text %}
+            <a href="{{ section.settings.hero_cta2_link }}" class="qh-btn qh-btn--ghost" aria-label="{{ section.settings.hero_cta2_text }}">{{ section.settings.hero_cta2_text }}</a>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="qh-hero-media">
+        {% if section.settings.hero_image != blank %}
+          <img src="{{ section.settings.hero_image | img_url: '1500x' }}" alt="{{ section.settings.hero_image_alt | escape }}">
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <div class="qh-how">
+      <h2 class="qh-h2">{{ section.settings.how_title }}</h2>
+      <p class="qh-desc">{{ section.settings.how_sub }}</p>
+      <div class="qh-steps">
+        {% for block in section.blocks %}
+          {% if block.type == 'step' %}
+            <div class="qh-step" {{ block.shopify_attributes }}>
+              {% if block.settings.image %}
+                <img class="qh-step-media" src="{{ block.settings.image | img_url: '900x' }}" alt="{{ block.settings.title | escape }}">
+              {% endif %}
+              <div class="qh-step-title">{{ block.settings.title }}</div>
+              <div class="qh-step-text">{{ block.settings.text }}</div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- WHO IT'S FOR -->
+    <div class="qh-who">
+      <h2 class="qh-h2">{{ section.settings.who_title }}</h2>
+      <div class="qh-cardgrid">
+        {% for block in section.blocks %}
+          {% if block.type == 'audience' %}
+            <div class="qh-card" {{ block.shopify_attributes }}>
+              {% if block.settings.media %}
+                <img class="qh-card-media" src="{{ block.settings.media | img_url: '700x' }}" alt="{{ block.settings.title | escape }}">
+              {% endif %}
+              <div class="qh-card-title">{{ block.settings.title }}</div>
+              <div class="qh-card-text">{{ block.settings.text }}</div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- COMPARISON -->
+    <div class="qh-compare">
+      <h2 class="qh-h2">{{ section.settings.compare_title }}</h2>
+      <div class="qh-table-wrap" role="region" aria-label="Comparison table">
+        <table class="qh-table">
+          <thead>
+            <tr>
+              <th class="qh-left">{{ section.settings.feature_label }}</th>
+              <th>QFlex</th>
+              <th>{{ section.settings.col_b }}</th>
+              <th>{{ section.settings.col_c }}</th>
+              <th>{{ section.settings.col_d }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for block in section.blocks %}
+              {% if block.type == 'row' %}
+                <tr {{ block.shopify_attributes }}>
+                  <td class="qh-left">{{ block.settings.feature }}</td>
+                  <td>{{ block.settings.qflex }}</td>
+                  <td>{{ block.settings.b }}</td>
+                  <td>{{ block.settings.c }}</td>
+                  <td>{{ block.settings.d }}</td>
+                </tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TESTIMONIALS -->
+    <div class="qh-testis">
+      {% for block in section.blocks %}
+        {% if block.type == 'quote' %}
+          <div class="qh-quote" {{ block.shopify_attributes }}>
+            <div class="qh-quote-mark">“</div>
+            <div class="qh-quote-text">{{ block.settings.text }}</div>
+            <div class="qh-quote-src">{{ block.settings.src }}</div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <!-- BADGES -->
+    <div class="qh-badges">
+      <div class="qh-badge">
+        <div class="qh-badge-title">{{ section.settings.badge1_t }}</div>
+        <div class="qh-badge-text">{{ section.settings.badge1_d }}</div>
+      </div>
+      <div class="qh-badge">
+        <div class="qh-badge-title">{{ section.settings.badge2_t }}</div>
+        <div class="qh-badge-text">{{ section.settings.badge2_d }}</div>
+      </div>
+      <div class="qh-badge">
+        <div class="qh-badge-title">{{ section.settings.badge3_t }}</div>
+        <div class="qh-badge-text">{{ section.settings.badge3_d }}</div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="qh-faq">
+      <h2 class="qh-h2">{{ section.settings.faq_title }}</h2>
+      <div class="qh-faq-list">
+        {% for block in section.blocks %}
+          {% if block.type == 'faq' %}
+            <details class="qh-faq-item" {{ block.shopify_attributes }}>
+              <summary class="qh-faq-q">{{ block.settings.q }}</summary>
+              <div class="qh-faq-a">{{ block.settings.a }}</div>
+            </details>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- FINAL CTA -->
+    <div class="qh-final">
+      <h3 class="qh-final-h">{{ section.settings.final_h }}</h3>
+      <p class="qh-final-sub">{{ section.settings.final_sub }}</p>
+      {% if section.settings.final_cta_url and section.settings.final_cta_text %}
+        <a href="{{ section.settings.final_cta_url }}" class="qh-btn qh-btn--primary">{{ section.settings.final_cta_text }}</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<style>
+/* Scope */
+.qh{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#111}
+.qh-wrap{max-width:1200px;margin:0 auto;padding:48px 20px}
+
+/* Trust */
+.qh-trust{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;align-items:center;padding:.6rem 1rem;background:#f5f5f5;color:#222;font-size:.95rem}
+
+/* Hero */
+.qh-hero{display:grid;gap:36px;align-items:center;background:linear-gradient(180deg,#fff 0%,#fafafa 100%);border-radius:20px;padding:36px;box-shadow:0 10px 30px rgba(0,0,0,.04);grid-template-columns:1fr}
+@media(min-width:992px){.qh-hero{grid-template-columns:1.05fr .95fr;padding:48px}}
+.qh-hero-copy{text-align:left}
+@media(max-width:991px){.qh-hero-copy{text-align:center}}
+.qh-eyebrow{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#0b6b4b;background:#e8f3ef;display:inline-block;padding:6px 10px;border-radius:999px;margin:0 0 12px}
+.qh-h1{font-weight:800;line-height:1.08;margin:0 0 12px;font-size:clamp(30px,4.6vw,52px)}
+.qh-sub{color:#3d3d3d;font-size:clamp(16px,2.2vw,20px);margin:0 0 18px}
+.qh-stars{display:flex;align-items:center;gap:.5rem;margin:0 0 18px}
+.qh-stars span:first-child{color:#f59e0b}
+.qh-stars-text{color:#444}
+.qh-cta{display:flex;flex-wrap:wrap;gap:12px}
+@media(max-width:991px){.qh-cta{justify-content:center}}
+.qh-btn{display:inline-block;font-weight:800;border-radius:12px;padding:14px 20px;text-decoration:none;transition:transform .15s ease,box-shadow .15s ease}
+.qh-btn--primary{background:#0b6b4b;color:#fff;box-shadow:0 8px 20px rgba(11,107,75,.22)}
+.qh-btn--primary:hover{transform:translateY(-1px)}
+.qh-btn--ghost{border:1px solid #d8d8d8;color:#111;background:#fff}
+.qh-btn--ghost:hover{transform:translateY(-1px)}
+.qh-hero-media{border-radius:16px;overflow:hidden;background:#f5f5f5;box-shadow:0 10px 30px rgba(0,0,0,.06);justify-self:end;max-width:560px;width:100%}
+.qh-hero-media img{width:100%;height:auto;display:block}
+
+/* How it works */
+.qh-how{margin-top:44px}
+.qh-h2{font-size:clamp(22px,3vw,30px);font-weight:800;margin:.25rem 0}
+.qh-desc{color:#555}
+.qh-steps{display:grid;gap:26px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:16px}
+.qh-step{background:#fff;border:1px solid #eee;padding:18px;border-radius:14px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.03)}
+.qh-step-media{width:100%;height:auto;border-radius:10px;background:#fafafa}
+.qh-step-title{font-weight:700;margin-top:.5rem}
+.qh-step-text{color:#555}
+
+/* Who it's for */
+.qh-who{margin-top:44px}
+.qh-cardgrid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-top:12px}
+.qh-card{border:1px solid #eee;border-radius:14px;padding:14px;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.03)}
+.qh-card-media{width:100%;height:auto;border-radius:10px;margin-bottom:8px}
+.qh-card-title{font-weight:700}
+.qh-card-text{color:#555;font-size:.95rem}
+
+/* Compare */
+.qh-compare{margin-top:44px}
+.qh-table-wrap{overflow:auto;border:1px solid #eee;border-radius:14px;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.03)}
+.qh-table{width:100%;border-collapse:collapse;font-size:.95rem}
+.qh-table th,.qh-table td{padding:.75rem;border-top:1px solid #f0f0f0;text-align:center}
+.qh-table thead th{background:#fafafa}
+.qh-left{text-align:left}
+
+/* Testimonials */
+.qh-testis{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:44px}
+.qh-quote{position:relative;border:1px solid #eee;border-radius:14px;background:#fff;padding:18px 18px 16px 18px;box-shadow:0 6px 18px rgba(0,0,0,.03)}
+.qh-quote-mark{position:absolute;left:12px;top:-6px;font-size:48px;color:#e6f0ec;line-height:1}
+.qh-quote-text{font-weight:600}
+.qh-quote-src{margin-top:6px;color:#555;font-size:.9rem}
+
+/* Badges */
+.qh-badges{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:44px}
+.qh-badge{border:1px solid #eee;border-radius:14px;padding:16px;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.03)}
+.qh-badge-title{font-weight:700;margin-bottom:.25rem}
+.qh-badge-text{color:#555}
+
+/* FAQ */
+.qh-faq{margin-top:44px}
+.qh-faq-list{display:grid;gap:10px}
+.qh-faq-item{border:1px solid #eee;border-radius:12px;background:#fff}
+.qh-faq-q{cursor:pointer;padding:14px 16px;font-weight:700}
+.qh-faq-a{padding:0 16px 16px;color:#555}
+
+/* Final CTA */
+.qh-final{margin:56px 0 8px;text-align:center;background:linear-gradient(180deg,#f7fbf9, #fff);border:1px solid #eef4f1;border-radius:16px;padding:28px}
+.qh-final-h{font-size:clamp(22px,3vw,30px);font-weight:800;margin:0 0 6px}
+.qh-final-sub{color:#555;margin:0 0 14px}
+</style>
+
+<!-- Organization + FAQ JSON-LD -->
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Organization",
+  "name": {{ shop.name | json }},
+  "url": {{ shop.url | json }},
+  "brand": {"@type":"Brand","name":"QFlex"}
+}
+</script>
+{% assign faq_blocks = section.blocks | where: 'type', 'faq' %}
+{% if faq_blocks.size > 0 %}
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"FAQPage",
+  "mainEntity":[
+    {% for block in faq_blocks %}
+      {"@type":"Question","name": {{ block.settings.q | json }},"acceptedAnswer":{"@type":"Answer","text": {{ block.settings.a | json }}}}{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "QFlex Home",
+  "settings": [
+    { "type":"text","id":"trust_left","label":"Trust left","default":"Free Shipping" },
+    { "type":"text","id":"trust_mid","label":"Trust middle","default":"Lifetime Breakage Warranty" },
+    { "type":"text","id":"trust_right","label":"Trust right","default":"Trusted by 75,000+ Customers" },
+
+    { "type":"checkbox","id":"eyebrow_show","label":"Show eyebrow tag","default": true },
+    { "type":"text","id":"eyebrow_text","label":"Eyebrow text","default":"MADE IN THE USA • DRUG-FREE RELIEF" },
+
+    { "type":"image_picker","id":"hero_image","label":"Hero Image" },
+    { "type":"text","id":"hero_image_alt","label":"Hero Image Alt Text","default":"Senior using QFlex acupressure hook" },
+    { "type":"text","id":"hero_title","label":"Hero Title","default":"Drug-Free Relief for Stubborn Back & Shoulder Knots" },
+    { "type":"textarea","id":"hero_subtitle","label":"Hero Subtitle","default":"The original Shark Tank acupressure hook. Made in the USA. Works in about a minute — no charging, no appointments." },
+
+    { "type":"checkbox","id":"show_stars","label":"Show stars row","default": true },
+    { "type":"text","id":"star_text","label":"Star row text","default":"4.8/5 • 2,000+ reviews" },
+
+    { "type":"text","id":"hero_cta_text","label":"Primary CTA Text","default":"Try QFlex – $26.95" },
+    { "type":"url","id":"hero_cta_link","label":"Primary CTA Link" },
+    { "type":"text","id":"hero_cta2_text","label":"Secondary CTA Text","default":"See How It Works" },
+    { "type":"url","id":"hero_cta2_link","label":"Secondary CTA Link" },
+
+    { "type":"text","id":"how_title","label":"How It Works title","default":"How It Works" },
+    { "type":"text","id":"how_sub","label":"How subtitle","default":"Three simple steps. Relief in 60–120 seconds." },
+
+    { "type":"text","id":"who_title","label":"Who it's for title","default":"Who It’s For" },
+
+    { "type":"text","id":"compare_title","label":"Compare title","default":"QFlex vs. Others" },
+    { "type":"text","id":"feature_label","label":"Feature column label","default":"Feature" },
+    { "type":"text","id":"col_b","label":"Column B label","default":"Massage Gun" },
+    { "type":"text","id":"col_c","label":"Column C label","default":"Foam Roller" },
+    { "type":"text","id":"col_d","label":"Column D label","default":"TheraCane" },
+
+    { "type":"text","id":"badge1_t","label":"Badge 1 title","default":"90-Day Risk-Free Trial" },
+    { "type":"textarea","id":"badge1_d","label":"Badge 1 description","default":"Love it or return it for a full refund." },
+    { "type":"text","id":"badge2_t","label":"Badge 2 title","default":"Lifetime Breakage Warranty" },
+    { "type":"textarea","id":"badge2_d","label":"Badge 2 description","default":"If it ever cracks during normal use, we replace it." },
+    { "type":"text","id":"badge3_t","label":"Badge 3 title","default":"Fast Shipping" },
+    { "type":"textarea","id":"badge3_d","label":"Badge 3 description","default":"Ships in 1–2 business days from our US warehouse." },
+
+    { "type":"text","id":"faq_title","label":"FAQ title","default":"Frequently Asked Questions" },
+
+    { "type":"text","id":"final_h","label":"Final CTA headline","default":"Ready for relief that actually works?" },
+    { "type":"textarea","id":"final_sub","label":"Final CTA subhead","default":"Try QFlex risk-free with free shipping and a lifetime breakage warranty." },
+    { "type":"text","id":"final_cta_text","label":"Final CTA button","default":"Shop QFlex" },
+    { "type":"url","id":"final_cta_url","label":"Final CTA link" }
+  ],
+  "blocks": [
+    { "type":"step","name":"How step","settings":[
+      { "type":"text","id":"title","label":"Step title","default":"Hook" },
+      { "type":"textarea","id":"text","label":"Step text","default":"Place the tip on the tight knot." },
+      { "type":"image_picker","id":"image","label":"Step image/GIF" }
+    ]},
+    { "type":"audience","name":"Who card","settings":[
+      { "type":"text","id":"title","label":"Title","default":"Seniors" },
+      { "type":"textarea","id":"text","label":"Description","default":"Gentle enough for arthritis, strong enough for knots." },
+      { "type":"image_picker","id":"media","label":"Image" }
+    ]},
+    { "type":"row","name":"Compare row","settings":[
+      { "type":"text","id":"feature","label":"Feature","default":"Reaches hard-to-get knots" },
+      { "type":"text","id":"qflex","label":"QFlex value","default":"✅" },
+      { "type":"text","id":"b","label":"Column B value","default":"❌" },
+      { "type":"text","id":"c","label":"Column C value","default":"❌" },
+      { "type":"text","id":"d","label":"Column D value","default":"✅" }
+    ]},
+    { "type":"quote","name":"Testimonial","settings":[
+      { "type":"textarea","id":"text","label":"Quote","default":"I can finally reach the spot my hands never could." },
+      { "type":"text","id":"src","label":"Source","default":"Barbara, 68" }
+    ]},
+    { "type":"faq","name":"FAQ item","settings":[
+      { "type":"text","id":"q","label":"Question","default":"Is it hard to use if I have limited strength?" },
+      { "type":"textarea","id":"a","label":"Answer","default":"No. The hook multiplies your leverage so a light pull gives deep pressure. Start gently for 5–10 seconds and increase slowly." }
+    ]}
+  ],
+  "presets": [{ "name":"QFlex Home", "category":"Custom" }]
+}
+{% endschema %}
