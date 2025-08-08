@@ -1,0 +1,20 @@
+enabled_checks:
+  - MissingRequiredTemplateFiles
+  - LiquidTag:
+      enabled: true
+  - SchemaTranslations
+  - ImgWidthAndHeight
+  - ParserBlockingJavascript
+  - RemoteAsset
+  - AssetSizeCSS
+  - AssetSizeJS
+  - LocaleKeys
+  - DeprecatedTags
+  - UnknownTags
+  - UnknownFilters
+  - RequiredSchemaSettings
+  - UniqueIDs
+  - ValidJSON
+  - DuplicateSchemas # custom rule name; see note
+exclude_patterns:
+  - node_modules/**
