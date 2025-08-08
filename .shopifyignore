@@ -1,0 +1,7 @@
+*.psd
+*.ai
+*.sketch
+*.map
+node_modules/
+scripts/**/tmp/**
+.DS_Store
