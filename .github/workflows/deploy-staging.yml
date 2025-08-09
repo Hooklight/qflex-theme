@@ -1,0 +1,70 @@
+name: Deploy to Staging Theme
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      SHOPIFY_STORE: ${{ secrets.SHOPIFY_STORE }}
+      SHOPIFY_ADMIN_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ADMIN_ACCESS_TOKEN }}
+      SHOPIFY_API_VERSION: ${{ secrets.SHOPIFY_API_VERSION }}
+      SHOPIFY_STAGING_THEME_ID: ${{ secrets.SHOPIFY_STAGING_THEME_ID }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (optional)
+        run: npm run build --if-present
+
+      - name: Validate Shopify secrets
+        id: validate
+        run: |
+          missing=""
+          for var in SHOPIFY_STORE SHOPIFY_ADMIN_ACCESS_TOKEN SHOPIFY_API_VERSION SHOPIFY_STAGING_THEME_ID; do
+            if [ -z "${!var}" ]; then
+              missing="$missing\n- $var"
+            fi
+          done
+          if [ -n "$missing" ]; then
+            echo "missing_secrets<<EOF" >> $GITHUB_OUTPUT
+            echo "$missing" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
+
+      - name: Exit if secrets missing
+        if: steps.validate.outputs.missing_secrets
+        run: |
+          echo "::error::Missing Shopify secrets:${{ steps.validate.outputs.missing_secrets }}"
+          exit 1
+
+      - name: Upload assets to staging theme
+        if: ${{ !steps.validate.outputs.missing_secrets }}
+        env:
+          STORE: ${{ env.SHOPIFY_STORE }}
+          TOKEN: ${{ env.SHOPIFY_ADMIN_ACCESS_TOKEN }}
+          API_VERSION: ${{ env.SHOPIFY_API_VERSION }}
+          THEME_ID: ${{ env.SHOPIFY_STAGING_THEME_ID }}
+        run: |
+          set -e
+          for file in $(git ls-files); do
+            key="$file"
+            base64content=$(base64 -w 0 "$file")
+            curl -s -X PUT "https://${STORE}.myshopify.com/admin/api/${API_VERSION}/themes/${THEME_ID}/assets.json" \
+              -H "X-Shopify-Access-Token: ${TOKEN}" \
+              -H "Content-Type: application/json" \
+              -d "{\"asset\":{\"key\":\"${key}\",\"attachment\":\"${base64content}\"}}" > /dev/null
+          done
+          echo "Deployed to staging theme ${THEME_ID}"
