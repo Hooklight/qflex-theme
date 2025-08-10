@@ -1,0 +1,51 @@
+name: Cleanup PR Preview Theme
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate secrets
+        id: validate
+        env:
+          SHOPIFY_STORE: ${{ secrets.SHOPIFY_STORE }}
+          SHOPIFY_ADMIN_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ADMIN_ACCESS_TOKEN }}
+          SHOPIFY_API_VERSION: ${{ secrets.SHOPIFY_API_VERSION }}
+        run: |
+          missing=""
+          for var in SHOPIFY_STORE SHOPIFY_ADMIN_ACCESS_TOKEN SHOPIFY_API_VERSION; do
+            if [ -z "${!var}" ]; then
+              missing="$missing\n- $var"
+            fi
+          done
+          if [ -n "$missing" ]; then
+            echo "missing_secrets<<EOF" >> $GITHUB_OUTPUT
+            echo "$missing" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+      - name: Exit early if secrets missing
+        if: steps.validate.outputs.missing_secrets
+        run: echo "Skipping theme deletion due to missing Shopify secrets."
+      - name: Delete preview theme
+        if: ${{ !steps.validate.outputs.missing_secrets }}
+        env:
+          STORE: ${{ secrets.SHOPIFY_STORE }}
+          TOKEN: ${{ secrets.SHOPIFY_ADMIN_ACCESS_TOKEN }}
+          API_VERSION: ${{ secrets.SHOPIFY_API_VERSION }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -e
+          # fetch all themes and filter for the PR theme name
+          themes_json=$(curl -s -X GET "https://${STORE}.myshopify.com/admin/api/${API_VERSION}/themes.json" \
+            -H "X-Shopify-Access-Token: ${TOKEN}")
+          theme_id=$(echo "$themes_json" | jq -r ".themes[] | select(.name==\"pr-${PR_NUMBER}\") | .id")
+          if [ -n "$theme_id" ] && [ "$theme_id" != "null" ]; then
+            curl -s -X DELETE "https://${STORE}.myshopify.com/admin/api/${API_VERSION}/themes/${theme_id}.json" \
+              -H "X-Shopify-Access-Token: ${TOKEN}"
+            echo "Deleted preview theme ${theme_id}"
+          else
+            echo "No preview theme to delete for PR ${PR_NUMBER}."
+          fi

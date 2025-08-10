@@ -1,0 +1,37 @@
+{%- comment -%}
+  QFlex product detail page (PDP) section.
+  This section renders product‑level meta content such as the hero eyebrow,
+  average rating, review count and unique selling propositions (USP) pills.
+  Metafields in the `qf` namespace take precedence; if they are empty
+  the section falls back to its own configurable settings. Formatting of
+  ratings is normalised to one decimal place.
+{%- endcomment -%}
+
+{%- liquid
+  assign hero_eyebrow = product.metafields.qf.hero_eyebrow.value | default: section.settings.eyebrow_text
+  assign avg_rating_raw = product.metafields.qf.avg_rating.value | default: 4.8
+  assign avg_rating = avg_rating_raw | plus: 0 | round: 1
+  assign review_count = product.metafields.qf.review_count.value | default: 2000
+  if product.metafields.qf.usp_pills.value != blank
+    assign usp_items = product.metafields.qf.usp_pills.value
+  else
+    assign usp_items = section.settings.usp_pills
+  endif
+-%}
+
+<div class="qflex-pdp">
+  {%- if hero_eyebrow != blank -%}
+    <p class="eyebrow">{{ hero_eyebrow }}</p>
+  {%- endif -%}
+  <p class="rating">
+    {{ avg_rating }}/5
+    <span class="review-count">({{ review_count }})</span>
+  </p>
+  {%- if usp_items != blank -%}
+    <ul class="usp-pills">
+      {%- for usp in usp_items -%}
+        <li>{{ usp }}</li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+</div>

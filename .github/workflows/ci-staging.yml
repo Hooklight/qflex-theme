@@ -1,0 +1,100 @@
+name: CI / PR Preview
+
+on:
+  pull_request:
+    branches:
+      - staging
+
+jobs:
+  build-and-preview:
+    runs-on: ubuntu-latest
+    env:
+      SHOPIFY_STORE: ${{ secrets.SHOPIFY_STORE }}
+      SHOPIFY_ADMIN_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ADMIN_ACCESS_TOKEN }}
+      SHOPIFY_API_VERSION: ${{ secrets.SHOPIFY_API_VERSION }}
+      PRODUCT_HANDLE: ${{ secrets.PRODUCT_HANDLE }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate Shopify secrets
+        id: validate
+        run: |
+          missing=""
+          for var in SHOPIFY_STORE SHOPIFY_ADMIN_ACCESS_TOKEN SHOPIFY_API_VERSION; do
+            if [ -z "${!var}" ]; then
+              missing="$missing\n- $var"
+            fi
+          done
+          if [ -n "$missing" ]; then
+            echo "missing_secrets<<EOF" >> $GITHUB_OUTPUT
+            echo "$missing" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
+
+      - name: Comment missing secrets on PR
+        if: steps.validate.outputs.missing_secrets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          body="🚨 Missing required Shopify secrets in CI workflow:$\n${{ steps.validate.outputs.missing_secrets }}$\nCreate these secrets under Settings → Secrets → Actions."
+          gh pr comment ${{ github.event.pull_request.number }} --body "$body"
+          exit 1
+
+      - name: Create unpublished theme and upload assets
+        if: ${{ !steps.validate.outputs.missing_secrets }}
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          STORE: ${{ env.SHOPIFY_STORE }}
+          TOKEN: ${{ env.SHOPIFY_ADMIN_ACCESS_TOKEN }}
+          API_VERSION: ${{ env.SHOPIFY_API_VERSION }}
+        run: |
+          set -e
+          THEME_NAME="pr-${PR_NUMBER}"
+          CREATE_RES=$(curl -s -X POST "https://${STORE}.myshopify.com/admin/api/${API_VERSION}/themes.json" \
+            -H "X-Shopify-Access-Token: ${TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "{\"theme\":{\"name\":\"${THEME_NAME}\",\"role\":\"unpublished\"}}")
+          THEME_ID=$(echo "$CREATE_RES" | jq -r '.theme.id')
+          if [ -z "$THEME_ID" ] || [ "$THEME_ID" = "null" ]; then
+            echo "Failed to create theme: $CREATE_RES"
+            exit 1
+          fi
+          echo "Created theme $THEME_ID"
+          echo "THEME_ID=$THEME_ID" >> $GITHUB_ENV
+          # Upload all files to the theme
+          for file in $(git ls-files); do
+            key="$file"
+            # encode file contents in base64 (no line breaks)
+            base64content=$(base64 -w 0 "$file")
+            curl -s -X PUT "https://${STORE}.myshopify.com/admin/api/${API_VERSION}/themes/${THEME_ID}/assets.json" \
+              -H "X-Shopify-Access-Token: ${TOKEN}" \
+              -H "Content-Type: application/json" \
+              -d "{\"asset\":{\"key\":\"${key}\",\"attachment\":\"${base64content}\"}}" > /dev/null
+          done
+          echo "PREVIEW_BASE_URL=https://${STORE}.myshopify.com/?preview_theme_id=${THEME_ID}" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Run visual tests
+        if: ${{ !steps.validate.outputs.missing_secrets }}
+        env:
+          PREVIEW_BASE_URL: ${{ env.PREVIEW_BASE_URL }}
+        run: |
+          npm run test:visual
+
+      - name: Post preview comment
+        if: ${{ !steps.validate.outputs.missing_secrets }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          body="🔍 **Preview your changes**: ${{ env.PREVIEW_BASE_URL }}"
+          gh pr comment ${{ github.event.pull_request.number }} --body "$body"
